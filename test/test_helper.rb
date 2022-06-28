@@ -7,11 +7,17 @@ require "i18n"
 require "i18n/backend/transliterator"
 require "i18n/backend/flatten"
 require "i18n/backend/simple"
-require "mocha/setup"
-require "test_declarative"
+require "mocha/minitest"
+require "i18n/tests"
 
-$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
-require "i18n/remote"
+$LOAD_PATH.unshift "lib"
+require "i18n/backend/remote"
+
+require "vcr"
+VCR.configure do |c|
+  c.cassette_library_dir = "test/fixtures/vcr"
+  c.hook_into :webmock
+end
 
 module I18n
   class TestCase < Minitest::Test
@@ -68,9 +74,8 @@ module I18n
       I18n.available_locales = []
       I18n.locale = :en
       I18n.default_locale = :en
-      # byebug
-      # I18n.load_path = []
-      # I18n.backend = nil
+      I18n.load_path = []
+      I18n.backend = nil
       super
     end
 

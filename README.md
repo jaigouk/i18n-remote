@@ -14,13 +14,22 @@ bundle install
 ## test
 
 ```
-bundle exec rspec
+bundle exec rake test
 ```
 
 ## usage
 
 Gemfile
 
+
+```ruby
+gem 'i18n-remote', git: "https://github.com/jaigouk/i18n-remote.git", require: 'i18n/backend/remote'
 ```
-i18n_remote, git:
+
+Config
+
+```ruby
+I18n::Backend::Remote.configure do |config|
+  config.memory_cache_size = 10
+end
 ```

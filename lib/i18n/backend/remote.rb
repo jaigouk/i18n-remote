@@ -1,16 +1,25 @@
 # frozen_string_literal: true
 
-require "i18n/backend/transliterator"
 require "i18n/backend/base"
-require "i18n/backend/flatten"
-require "i18n/backend/remote/error"
-require "i18n/backend/remote/configuration"
+require "i18n/backend/transliterator"
 
 module I18n
   module Backend
     class Remote
-      autoload :Error, "i18n/backend/remote/error"
       autoload :Configuration, "i18n/backend/remote/configuration"
+      autoload :Error, "i18n/backend/remote/error"
+      autoload :HttpClient, "i18n/backend/remote/http_client"
+
+      def initialize(options = {})
+        @options = {
+          http_open_timeout: self.class.config.http_open_timeout,
+          http_read_timeout: self.class.config.http_read_timeout,
+          http_open_retries: self.class.config.http_open_retries,
+          http_read_retries: self.class.config.http_read_retries,
+          memory_cache_size: self.class.config.memory_cache_size
+        }.merge(options)
+        reload!
+      end
 
       class << self
         def configure
@@ -22,23 +31,16 @@ module I18n
         end
       end
 
-      def initialize
-        reload!
-      end
-
       module Implementation
         include Base
         include Flatten
 
         def available_locales
-          Translation.available_locales
-        rescue ::ActiveRecord::StatementInvalid
           []
         end
 
         def store_translations(_locale, _data, options = {})
-          escape = options.fetch(:escape, true)
-          escape
+          options.fetch(:escape, true)
         end
 
         def reload!
@@ -62,15 +64,8 @@ module I18n
 
         protected
 
-        def lookup(locale, key, scope = [], options = {})
-          key = normalize_flat_keys(locale, key, scope, options[:separator])
-          key = key[1..] if key.first == "."
-          key = key[0..-2] if key.last == "."
-          key
-        end
-
-        def build_translation_hash_by_key(_lookup_key, _translation)
-          {}
+        def lookup(locale, _key, _scope = [], _options = {})
+          puts locale
         end
       end
 

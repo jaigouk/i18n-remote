@@ -9,7 +9,9 @@ class I18nBackendRemoteTest < I18n::TestCase
     I18n.backend = I18n::Backend::Remote.new
   end
 
-  def test_that_it_has_a_version_number
-    refute_nil ::I18n::Backend::Remote::VERSION
+  def test_config
+    I18n::Backend::Remote.configure { |config| config.memory_cache_size = 5 }
+
+    assert_equal I18n::Backend::Remote.config.memory_cache_size, 5
   end
 end
