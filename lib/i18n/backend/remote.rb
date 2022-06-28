@@ -50,7 +50,7 @@ module I18n
         end
 
         def initialized?
-          !@translations.nil?
+          !@translations.nil? && !self.class.config.base_url.nil? && !self.class.config.file_list.empty?
         end
 
         def init_translations

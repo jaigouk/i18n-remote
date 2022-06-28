@@ -3,10 +3,12 @@
 module I18n
   module Backend
     class Remote
-      class HttpClient
+      class FetchRemote
         def initialize(options)
           @options = options
         end
+
+        def call; end
       end
     end
   end
