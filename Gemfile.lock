@@ -2,6 +2,7 @@ PATH
   remote: .
   specs:
     i18n-remote (0.1.0)
+      faraday
       i18n (~> 1.10)
 
 GEM
@@ -14,6 +15,10 @@ GEM
     concurrent-ruby (1.1.10)
     crack (0.4.5)
       rexml
+    faraday (2.3.0)
+      faraday-net_http (~> 2.0)
+      ruby2_keywords (>= 0.0.4)
+    faraday-net_http (2.0.3)
     hashdiff (1.0.1)
     i18n (1.10.0)
       concurrent-ruby (~> 1.0)
@@ -39,6 +44,7 @@ GEM
     rubocop-ast (1.18.0)
       parser (>= 3.1.1.0)
     ruby-progressbar (1.11.0)
+    ruby2_keywords (0.0.5)
     test_declarative (0.0.6)
     unicode-display_width (2.2.0)
     vcr (6.1.0)

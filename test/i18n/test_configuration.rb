@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class I18nBackendRemoteTest < I18n::TestCase
+class I18nBackendRemoteConfigurationTest < I18n::TestCase
   def setup
     super
 

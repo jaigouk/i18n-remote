@@ -8,7 +8,7 @@ module I18n
     class Remote
       autoload :Configuration, "i18n/backend/remote/configuration"
       autoload :Error, "i18n/backend/remote/error"
-      autoload :HttpClient, "i18n/backend/remote/http_client"
+      autoload :FetchRemoteFile, "i18n/backend/remote/fetch_remote_file"
 
       def initialize(options = {})
         @options = {
