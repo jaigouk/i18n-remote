@@ -32,8 +32,11 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_runtime_dependency("i18n", "~> 1.10")
   spec.add_runtime_dependency("faraday")
+  spec.add_runtime_dependency("faraday-net_http_persistent")
+  spec.add_runtime_dependency("i18n", "~> 1.10")
+  spec.add_runtime_dependency("parallel")
+  spec.add_runtime_dependency("psych")
   spec.add_development_dependency "bundler"
   spec.add_development_dependency("byebug")
   spec.add_development_dependency "minitest"
@@ -43,4 +46,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "test_declarative"
   spec.add_development_dependency "vcr"
   spec.add_development_dependency "webmock"
+  spec.metadata["rubygems_mfa_required"] = "true"
 end

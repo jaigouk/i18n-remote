@@ -1,6 +1,6 @@
 # i18n-remote
 
-based on [i18n gem](https://github.com/ruby-i18n/i18n) supports multiple backends to store and retrieve translations.
+extending [i18n gem](https://github.com/ruby-i18n/i18n)
 
 - fetching translation files via HTTP rather than just relying on local translation files
 - fall back to local translation files in case of any network issues
@@ -18,6 +18,12 @@ Config
 ```ruby
 I18n::Backend::Remote.configure do |config|
   config.memory_cache_size = 10
+  # base url for fetching yml files
+  config.base_url = "http://localhost:8080/locales/"
+  # file list that will be concatenated after base_url
+  config.file_list = ["en.yml", "de.yml", "extra/data.yml"]
+  # used for pararell http requests
+  conofig.faraday_process_count = 6
 end
 ```
 

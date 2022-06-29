@@ -1,48 +1,76 @@
 # frozen_string_literal: true
 
 require "faraday"
+require "parallel"
+require "faraday/net_http_persistent"
 
 module I18n
   module Backend
     class Remote
-      class NotFound < StandardError; end
       class FetchRemoteFile
-
         def initialize
           @base_url = I18n::Backend::Remote.config.base_url
           @file_list = I18n::Backend::Remote.config.file_list
+          @faraday_process_count = I18n::Backend::Remote.config.faraday_process_count
+          @idle_timeout = I18n::Backend::Remote.config.http_read_timeout
+
+          # for now we disable ssl verification
+          @ssl_verify = false
+          @client_certificate = nil
+          @client_private_key = nil
+
+          @result = {}
         end
 
-        attr_reader :base_url, :file_list
+        attr_reader :base_url, :file_list, :faraday_process_count,
+                    :idle_timeout, :ssl_verify, :client_certificate,
+                    :client_private_key
 
-        # iterate through yml file list
-        # parse yaml and save.
-        # return @translate
-        #
-        # Guard
-        #
-        # - empty file_list
-        # -
-        #
-        # error cases
-        #
-        # - connection problem
-        # - missing file
-        # - wrong yaml
-        # - local dir does not exist
         def call
-          conn = Faraday.new(base_url)
-          response = conn.get("en.yml", nil, { "User-Agent" => "Mozilla/5.0" })
-
-          if response.status == 401
-            @token = nil
-
-            raise NotFound
-          end
-          response
+          guard
+          fetch
+          @result
         end
 
-        # private
+        private
+
+        def guard
+          raise ::I18n::Backend::Remote::MissingBaseUrl if  base_url.empty?
+          raise ::I18n::Backend::Remote::MissingFileList if file_list.empty?
+        end
+
+        def fetch
+          Parallel.map(file_list, in_processes: faraday_process_count) do |file|
+            @result[file] = http_request(file)
+          end
+          @result
+        end
+
+        Response = Struct.new(:status, :body, keyword_init: true)
+
+        def http_request(file)
+          resp = connection.get(file)
+          Response.new(
+            status: resp.status,
+            body: resp.body
+          )
+        end
+
+        def connection
+          Faraday.new(url: base_url, ssl: ssl_options) do |f|
+            f.adapter :net_http_persistent, pool_size: 5 do |http|
+              http.idle_timeout = idle_timeout
+            end
+          end
+        end
+
+        def ssl_options
+          {
+            client_cert: client_certificate,
+            client_key: client_private_key,
+            verify: ssl_verify
+          }
+        end
       end
     end
   end

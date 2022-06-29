@@ -7,17 +7,17 @@ module I18n
   module Backend
     class Remote
       autoload :Configuration, "i18n/backend/remote/configuration"
-      autoload :Error, "i18n/backend/remote/error"
+      # Operations
       autoload :FetchRemoteFile, "i18n/backend/remote/fetch_remote_file"
+      autoload :ValidateYmlString, "i18n/backend/remote/validate_yml_string"
+      autoload :WriteYml, "i18n/backend/remote/write_yml"
+      # Errors
+      autoload :MissingBaseUrl, "i18n/backend/remote/errors"
+      autoload :MissingFileList, "i18n/backend/remote/errors"
+      autoload :ParseError, "i18n/backend/remote/errors"
+      autoload :WriteError, "i18n/backend/remote/errors"
 
-      def initialize(options = {})
-        @options = {
-          http_open_timeout: self.class.config.http_open_timeout,
-          http_read_timeout: self.class.config.http_read_timeout,
-          http_open_retries: self.class.config.http_open_retries,
-          http_read_retries: self.class.config.http_read_retries,
-          memory_cache_size: self.class.config.memory_cache_size
-        }.merge(options)
+      def initialize
         reload!
       end
 
