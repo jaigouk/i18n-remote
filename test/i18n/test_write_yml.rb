@@ -15,7 +15,7 @@ class TestWriteYml < I18n::TestCase
   end
 
   def test_write_yml
-    res = I18n::Backend::Remote::WriteYml.new(en_body, "en.yml", "tmp").call
+    I18n::Backend::Remote::WriteYml.new(en_body, "en.yml", "tmp").call
     parsed = Psych.parse_stream(File.read("tmp/en.yml")).to_yaml
 
     assert_equal parsed, en_body

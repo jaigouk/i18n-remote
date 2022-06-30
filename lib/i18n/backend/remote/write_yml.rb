@@ -24,7 +24,7 @@ module I18n
         def guard
           raise ::I18n::Backend::Remote::WriteError, "Empty data for yaml file" if nil_or_empty?(str)
 
-          raise ::I18n::Backend::Remote::WriteError, "Filename is empty" if nil_or_empty?(filename)
+          raise ::I18n::Backend::Remote::WriteError, "Filename is empty" if Utils.nil_or_empty?(filename)
 
           raise ::I18n::Backend::Remote::WriteError, "input directory is empty" if nil_or_empty?(file_path)
 
@@ -48,7 +48,7 @@ module I18n
         end
 
         def nil_or_empty?(data)
-          data.nil? || data.empty?
+          I18n::Backend::Remote::Utils.nil_or_empty?(data)
         end
       end
     end

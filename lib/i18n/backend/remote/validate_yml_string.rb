@@ -31,7 +31,7 @@ module I18n
         end
 
         def nil_or_empty?(data)
-          data.nil? || data.empty?
+          I18n::Backend::Remote::Utils.nil_or_empty?(data)
         end
       end
     end

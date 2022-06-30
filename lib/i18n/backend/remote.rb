@@ -7,6 +7,7 @@ module I18n
   module Backend
     class Remote
       autoload :Configuration, "i18n/backend/remote/configuration"
+      autoload :Utils, "i18n/backend/remote/utils"
       # Operations
       autoload :FetchRemoteFile, "i18n/backend/remote/fetch_remote_file"
       autoload :ValidateYmlString, "i18n/backend/remote/validate_yml_string"
