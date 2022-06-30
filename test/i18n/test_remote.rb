@@ -10,7 +10,7 @@ class TestRemote < I18n::TestCase
       config.file_list = ["en.yml", "de.yml"]
       config.base_url = "http://localhost:8080"
       config.faraday_process_count = 0
-      config.root_dir = "tmp"
+      config.root_dir = "test/fixtures/write_test"
     end
   end
 
@@ -21,8 +21,8 @@ class TestRemote < I18n::TestCase
       config.base_url = nil
     end
 
-    File.delete("tmp/en.yml") if File.exist?("tmp/en.yml")
-    File.delete("tmp/de.yml") if File.exist?("tmp/de.yml")
+    File.delete("test/fixtures/write_test/en.yml") if File.exist?("test/fixtures/write_test/en.yml")
+    File.delete("test/fixtures/write_test/de.yml") if File.exist?("test/fixtures/write_test/de.yml")
 
     I18n.enforce_available_locales = false
     I18n.available_locales = []
@@ -50,9 +50,17 @@ class TestRemote < I18n::TestCase
   def test_store_translations
     VCR.use_cassette("integration_store_translations") do
       I18n.backend = I18n::Backend::Remote.new
-      I18n::backend.store_translations(:en, { you: "there" })
+      I18n.backend.store_translations(:en, { you: "there" })
 
       assert_equal "there", I18n.t("you")
+    end
+  end
+
+  def test_yaml_file_write
+    VCR.use_cassette("integration_yml_file_write") do
+      I18n.backend = I18n::Backend::Remote.new
+      assert_equal File.exist?("test/fixtures/write_test/de.yml"), true
+      assert_equal File.exist?("test/fixtures/write_test/en.yml"), true
     end
   end
 

@@ -59,6 +59,7 @@ module I18n
           @initialized = false
           @translations = {}
           @errors = []
+          @parsed = {}
           check_configuration
           init_translations
           self
@@ -104,20 +105,19 @@ module I18n
             when (200...300) || 302
               @translations[key] = value.body
             else
-              @errors << "server returned status #{res[key].status}"
+              @errors << "server returned status #{res[key].status} for #{key} file"
             end
           end
         rescue MissingBaseUrl, MissingFileList => e
           @errors << e.message
         end
 
+        # TODO: check pararell gem
         def validate_yml_string
           temp = {}
           @translations.each do |key, value|
             res = I18n::Backend::Remote::ValidateYmlString.new(value).call
-            root_key = res.parsed.keys.first
-            temp[root_key] = res.parsed[root_key]
-            @translations.delete(key)
+            assign_values(temp, res, key)
           rescue I18n::Backend::Remote::ParseError => e
             @errors << e.message
             next
@@ -126,18 +126,26 @@ module I18n
           @translations = I18n::Utils.deep_symbolize_keys(@translations)
         end
 
+        def assign_values(temp, res, key)
+          root_key = res.parsed.keys.first
+          temp[root_key] = res.parsed[root_key]
+          @parsed[key] = res.str
+          @translations.delete(key)
+        end
+
+        # TODO: check pararell gem
         def write_yml
-          puts "x"
+          @parsed.each do |key, value|
+            I18n::Backend::Remote::WriteYml.new(
+              value, key, I18n::Backend::Remote.config.root_dir
+            ).call
+          end
         end
 
         # fill @translations from local yml files if they exist
         def check_fall_back_locale
           puts "x"
         end
-
-        # def nil_or_empty?(data)
-        #   I18n::Backend::Remote::Utils.nil_or_empty?(data)
-        # end
       end
 
       include Implementation
