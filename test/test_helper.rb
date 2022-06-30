@@ -19,34 +19,6 @@ VCR.configure do |c|
   c.hook_into :webmock
 end
 
-module I18n
-  class TestCase < Minitest::Test
-    def assert_nothing_raised(*_args)
-      yield
-    end
-
-    def setup
-      super
-      I18n.load_path = nil
-      I18n.enforce_available_locales = false
-    end
-
-    protected
-
-    def translations
-      I18n.backend.instance_variable_get(:@translations)
-    end
-
-    def store_translations(locale, data, options = I18n::EMPTY_HASH)
-      I18n.backend.store_translations(locale, data, options)
-    end
-
-    def locales_dir
-      "#{File.dirname(__FILE__)}/fixtures/locales"
-    end
-  end
-end
-
 TEST_CASE = defined?(Minitest::Test) ? Minitest::Test : MiniTest::Unit::TestCase
 
 class TEST_CASE # rubocop:disable Naming/ClassAndModuleCamelCase
