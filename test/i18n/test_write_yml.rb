@@ -11,7 +11,7 @@ class TestWriteYml < I18n::TestCase
 
   def teardown
     super
-    File.delete("tmp/en.yml") if File.exist?("tmp/en.yml")
+    # File.delete("tmp/en.yml") if File.exist?("tmp/en.yml")
   end
 
   def test_write_yml

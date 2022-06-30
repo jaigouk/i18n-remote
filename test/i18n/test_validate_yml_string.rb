@@ -49,6 +49,15 @@ class TestValidateYmlString < I18n::TestCase
     assert_equal res.str, en_body_missing_newline
   end
 
+  def test_parse_en_body_wrong_indentation
+    res = I18n::Backend::Remote::ValidateYmlString.new(en_body_wrong_indentation).call
+    error = "mapping values are not allowed in this context"
+
+    assert_nil res.parsed
+    assert_equal res.errors.include?(error), true
+    assert_equal res.str, en_body_wrong_indentation
+  end
+
   def expected_keys
     ["confirmation_sent_at", "confirmation_token", "confirmed_at", "created_at", "current_password", "current_sign_in_at", "current_sign_in_ip", "email", "encrypted_password", "failed_attempts", "last_sign_in_at", "last_sign_in_ip", "locked_at", "password", "password_confirmation", "remember_created_at", "remember_me"]
   end

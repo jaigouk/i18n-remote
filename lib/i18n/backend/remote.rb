@@ -6,17 +6,18 @@ require "i18n/backend/transliterator"
 module I18n
   module Backend
     class Remote
+      # config and utils
       autoload :Configuration, "i18n/backend/remote/configuration"
       autoload :Utils, "i18n/backend/remote/utils"
-      # Operations
-      autoload :FetchRemoteFile, "i18n/backend/remote/fetch_remote_file"
-      autoload :ValidateYmlString, "i18n/backend/remote/validate_yml_string"
-      autoload :WriteYml, "i18n/backend/remote/write_yml"
       # Errors
       autoload :MissingBaseUrl, "i18n/backend/remote/errors"
       autoload :MissingFileList, "i18n/backend/remote/errors"
       autoload :ParseError, "i18n/backend/remote/errors"
       autoload :WriteError, "i18n/backend/remote/errors"
+      # Operations
+      autoload :FetchRemoteFile, "i18n/backend/remote/fetch_remote_file"
+      autoload :ValidateYmlString, "i18n/backend/remote/validate_yml_string"
+      autoload :WriteYml, "i18n/backend/remote/write_yml"
 
       def initialize
         reload!

@@ -19,7 +19,9 @@ module I18n
         private
 
         def guard
-          raise ::I18n::Backend::Remote::ParseError, "Validation falied - nil value" if nil_or_empty?(str)
+          return unless ::I18n::Backend::Remote::Utils.nil_or_empty?(str)
+
+          raise ::I18n::Backend::Remote::ParseError, "Validation falied - nil value"
         end
 
         Response = Struct.new(:parsed, :str, :errors, keyword_init: true)
@@ -28,10 +30,6 @@ module I18n
           Response.new(parsed: Psych.parse(str).to_ruby, str: str, errors: nil)
         rescue Psych::SyntaxError => e
           Response.new(parsed: nil, str: str, errors: e.message)
-        end
-
-        def nil_or_empty?(data)
-          I18n::Backend::Remote::Utils.nil_or_empty?(data)
         end
       end
     end
