@@ -45,11 +45,14 @@ module I18n
 
         attr_reader :errors
 
-        def store_translations(locale, data, _options = {})
-          @translations[locale] = data
+        # also rewrites the yml file
+        def store_translations(locale, data, options = {})
+          return unless data.is_a?(Hash)
 
-          # data = Utils.deep_symbolize_keys(data) unless options.fetch(:skip_symbolize_keys, false)
-          # Utils.deep_merge!(translations[locale], data)
+          @translations[locale] = data
+          data = I18n::Utils.deep_symbolize_keys(data) unless options.fetch(:skip_symbolize_keys, false)
+
+          I18n::Utils.deep_merge!(@translations[locale], data)
         end
 
         def reload!

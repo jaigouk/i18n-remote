@@ -47,6 +47,15 @@ class TestRemote < I18n::TestCase
     end
   end
 
+  def test_store_translations
+    VCR.use_cassette("integration_store_translations") do
+      I18n.backend = I18n::Backend::Remote.new
+      I18n::backend.store_translations(:en, { you: "there" })
+
+      assert_equal "there", I18n.t("you")
+    end
+  end
+
   def test_configuration_error
     I18n::Backend::Remote.configure do |config|
       config.file_list = ["en.yml", "de.yml"]

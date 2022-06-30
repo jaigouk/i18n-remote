@@ -1,0 +1,110 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://localhost:8080/en.yml
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - '30'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=3600
+      Last-Modified:
+      - Tue, 28 Jun 2022 11:53:30 GMT
+      Etag:
+      - W/"107689134-735-2022-06-28T11:53:30.753Z"
+      Content-Length:
+      - '735'
+      Content-Type:
+      - text/yaml; charset=UTF-8
+      Date:
+      - Thu, 30 Jun 2022 21:25:17 GMT
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: |
+        ---
+        en:
+          activerecord:
+            attributes:
+              user:
+                confirmation_sent_at: Confirmation sent at
+                confirmation_token: Confirmation token
+                confirmed_at: Confirmed at
+                created_at: Created at
+                current_password: Current password
+                current_sign_in_at: Current sign in at
+                current_sign_in_ip: Current sign in IP
+                email: Email
+                encrypted_password: Encrypted password
+                failed_attempts: Failed attempts
+                last_sign_in_at: Last sign in at
+                last_sign_in_ip: Last sign in IP
+                locked_at: Locked at
+                password: Password
+                password_confirmation: Password confirmation
+                remember_created_at: Remember created at
+                remember_me: Remember me
+  recorded_at: Thu, 30 Jun 2022 21:25:17 GMT
+- request:
+    method: get
+    uri: http://localhost:8080/de.yml
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      User-Agent:
+      - Faraday v2.3.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+      Connection:
+      - keep-alive
+      Keep-Alive:
+      - '30'
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Accept-Ranges:
+      - bytes
+      Cache-Control:
+      - max-age=3600
+      Last-Modified:
+      - Tue, 28 Jun 2022 11:53:30 GMT
+      Etag:
+      - W/"107689133-782-2022-06-28T11:53:30.751Z"
+      Content-Length:
+      - '782'
+      Content-Type:
+      - text/yaml; charset=UTF-8
+      Date:
+      - Thu, 30 Jun 2022 21:25:17 GMT
+      Connection:
+      - keep-alive
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        LS0tCmRlOgogIGFjdGl2ZXJlY29yZDoKICAgIGF0dHJpYnV0ZXM6CiAgICAgIHVzZXI6CiAgICAgICAgY29uZmlybWF0aW9uX3NlbnRfYXQ6IEJlc3TDpHRpZ3VuZyBnZXNlbmRldCBhbQogICAgICAgIGNvbmZpcm1hdGlvbl90b2tlbjogQmVzdMOkdGlndW5ncy1Ub2tlbgogICAgICAgIGNvbmZpcm1lZF9hdDogQmVzdMOkdGlndCBhbQogICAgICAgIGNyZWF0ZWRfYXQ6IEVyc3RlbGx0IGFtCiAgICAgICAgY3VycmVudF9wYXNzd29yZDogQmlzaGVyaWdlcyBQYXNzd29ydAogICAgICAgIGN1cnJlbnRfc2lnbl9pbl9hdDogQWt0dWVsbGUgQW5tZWxkdW5nIHZvbQogICAgICAgIGN1cnJlbnRfc2lnbl9pbl9pcDogSVAgYWt0dWVsbGVyIEFubWVsZHVuZwogICAgICAgIGVtYWlsOiBFLU1haWwKICAgICAgICBlbmNyeXB0ZWRfcGFzc3dvcmQ6IFZlcnNjaGzDvHNzZWx0ZXMgUGFzc3dvcnQKICAgICAgICBmYWlsZWRfYXR0ZW1wdHM6IEZlaGx2ZXJzdWNoZQogICAgICAgIGxhc3Rfc2lnbl9pbl9hdDogTGV0enRlIEFubWVsZHVuZyBhbQogICAgICAgIGxhc3Rfc2lnbl9pbl9pcDogSVAgZGVyIGxldHp0ZW4gQW5tZWxkdW5nCiAgICAgICAgbG9ja2VkX2F0OiBHZXNwZXJydCBhbQogICAgICAgIHBhc3N3b3JkOiBQYXNzd29ydAogICAgICAgIHBhc3N3b3JkX2NvbmZpcm1hdGlvbjogUGFzc3dvcnRiZXN0w6R0aWd1bmcKICAgICAgICByZW1lbWJlcl9jcmVhdGVkX2F0OiBBbmdlbWVsZGV0IGJsZWliZW4gdm9tCiAgICAgICAgcmVtZW1iZXJfbWU6IEFuZ2VtZWxkZXQgYmxlaWJlbgo=
+  recorded_at: Thu, 30 Jun 2022 21:25:17 GMT
+recorded_with: VCR 6.1.0
