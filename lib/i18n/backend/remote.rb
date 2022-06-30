@@ -2,6 +2,7 @@
 
 require "i18n/backend/base"
 require "i18n/backend/transliterator"
+require "i18n/utils"
 
 module I18n
   module Backend
@@ -12,6 +13,7 @@ module I18n
       # Errors
       autoload :MissingBaseUrl, "i18n/backend/remote/errors"
       autoload :MissingFileList, "i18n/backend/remote/errors"
+      autoload :ConfigurationError, "i18n/backend/remote/errors"
       autoload :ParseError, "i18n/backend/remote/errors"
       autoload :WriteError, "i18n/backend/remote/errors"
       # Operations
@@ -41,31 +43,53 @@ module I18n
           @translations.keys.map(&:to_sym)
         end
 
-        def store_translations(_locale, _data, options = {})
-          options.fetch(:escape, true)
+        attr_reader :errors
+
+        def store_translations(locale, data, _options = {})
+          @translations[locale] = data
+
+          # data = Utils.deep_symbolize_keys(data) unless options.fetch(:skip_symbolize_keys, false)
+          # Utils.deep_merge!(translations[locale], data)
         end
 
         def reload!
-          @translations = nil
+          @initialized = false
+          @translations = {}
           @errors = []
-          fetch_remote_files
-          validate_yml_string
-          write_yml
-          check_fall_back_locale
+          check_configuration
+          init_translations
           self
         end
 
         def initialized?
-          !@translations.nil? && !self.class.config.base_url.nil? && !self.class.config.file_list.empty?
-        end
-
-        def init_translations
-          @translations = {}
+          @initialized ||= false
         end
 
         def translations(do_init: false)
           init_translations if do_init || !initialized?
           @translations ||= {}
+          @initialized = true
+        end
+
+        protected
+
+        def lookup(locale, key, _scope = [], _options = {})
+          keys = ([locale] + key.split(I18n::Backend::Flatten::FLATTEN_SEPARATOR)).map(&:to_sym)
+          @translations.dig(*keys)
+        end
+
+        def check_configuration
+          return if I18n::Backend::Remote.config.valid?
+
+          @errors << "Missing configurations"
+        end
+
+        def init_translations
+          fetch_remote_files
+          validate_yml_string
+          write_yml
+          check_fall_back_locale
+          @initialized = true
         end
 
         private
@@ -74,8 +98,8 @@ module I18n
           res = I18n::Backend::Remote::FetchRemoteFile.new.call
           res.each do |key, value|
             case res[key].status
-            when 200...302
-              translations[key] = value.body
+            when (200...300) || 302
+              @translations[key] = value.body
             else
               @errors << "server returned status #{res[key].status}"
             end
@@ -85,7 +109,18 @@ module I18n
         end
 
         def validate_yml_string
-          puts "x"
+          temp = {}
+          @translations.each do |key, value|
+            res = I18n::Backend::Remote::ValidateYmlString.new(value).call
+            root_key = res.parsed.keys.first
+            temp[root_key] = res.parsed[root_key]
+            @translations.delete(key)
+          rescue I18n::Backend::Remote::ParseError => e
+            @errors << e.message
+            next
+          end
+          @translations.merge!(temp)
+          @translations = I18n::Utils.deep_symbolize_keys(@translations)
         end
 
         def write_yml
@@ -97,11 +132,9 @@ module I18n
           puts "x"
         end
 
-        protected
-
-        def lookup(locale, _key, _scope = [], _options = {})
-          puts locale
-        end
+        # def nil_or_empty?(data)
+        #   I18n::Backend::Remote::Utils.nil_or_empty?(data)
+        # end
       end
 
       include Implementation

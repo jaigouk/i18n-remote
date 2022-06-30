@@ -2,7 +2,7 @@
 
 extending [i18n gem](https://github.com/ruby-i18n/i18n)
 
-- fetching translation files via HTTP rather than just relying on local translation files
+- fetch multiple remote i18n yaml files
 - fall back to local translation files in case of any network issues
 
 ## usage

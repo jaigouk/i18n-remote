@@ -20,6 +20,16 @@ module I18n
         def load_list
           file_list.map { |f| "#{root_dir}/#{f}" }.sort
         end
+
+        def valid?
+          !nil_or_empty?(file_list) && !nil_or_empty?(base_url) && !nil_or_empty?(root_dir)
+        end
+
+        private
+
+        def nil_or_empty?(data)
+          I18n::Backend::Remote::Utils.nil_or_empty?(data)
+        end
       end
     end
   end
