@@ -26,6 +26,11 @@ I18n::Backend::Remote.configure do |config|
   # dir location to save fetched files
   config.root_dir = "config/locales"
 end
+
+# check configuartion is valid
+I18n::Backend::Remote.config.valid?
+# then initialize Remote
+I18n.backend = I18n::Backend::Remote.new
 ```
 
 ## test
