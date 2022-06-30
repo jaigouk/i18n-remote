@@ -66,16 +66,28 @@ module I18n
       I18n.locale = :en
       I18n.default_locale = :en
       I18n.load_path = []
+
+      FileUtils.mkdir_p "tmp"
       super
     end
 
     def teardown
+      I18n::Backend::Remote.configure do |config|
+        config.file_list = []
+        config.root_dir = nil
+        config.base_url = nil
+      end
+
+      File.delete("tmp/en.yml") if File.exist?("tmp/en.yml")
+      File.delete("tmp/de.yml") if File.exist?("tmp/de.yml")
+
       I18n.enforce_available_locales = false
       I18n.available_locales = []
       I18n.locale = :en
       I18n.default_locale = :en
       I18n.load_path = []
       I18n.backend = nil
+
       super
     end
 

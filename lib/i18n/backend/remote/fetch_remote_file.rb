@@ -35,8 +35,8 @@ module I18n
         private
 
         def guard
-          raise ::I18n::Backend::Remote::MissingBaseUrl if  base_url.empty?
-          raise ::I18n::Backend::Remote::MissingFileList if file_list.empty?
+          raise ::I18n::Backend::Remote::MissingBaseUrl if nil_or_empty?(base_url)
+          raise ::I18n::Backend::Remote::MissingFileList if nil_or_empty?(file_list)
         end
 
         def fetch
@@ -70,6 +70,10 @@ module I18n
             client_key: client_private_key,
             verify: ssl_verify
           }
+        end
+
+        def nil_or_empty?(data)
+          I18n::Backend::Remote::Utils.nil_or_empty?(data)
         end
       end
     end

@@ -8,6 +8,7 @@ class TestFetchRemoteFile < I18n::TestCase
       config.file_list = ["en.yml", "de.yml", "en-phrase.yml"]
       config.base_url = "http://localhost:8080"
       config.faraday_process_count = 0
+      config.root_dir = "tmp"
     end
 
     res = nil
@@ -28,10 +29,12 @@ class TestFetchRemoteFile < I18n::TestCase
     I18n::Backend::Remote.configure do |config|
       config.file_list = ["en.yml"]
       config.base_url = ""
+      config.root_dir = "tmp"
     end
-
-    assert_raises ::I18n::Backend::Remote::MissingBaseUrl do
-      I18n::Backend::Remote::FetchRemoteFile.new.call
+    VCR.use_cassette("missing_base_url") do
+      assert_raises ::I18n::Backend::Remote::MissingBaseUrl do
+        I18n::Backend::Remote::FetchRemoteFile.new.call
+      end
     end
   end
 
@@ -39,6 +42,7 @@ class TestFetchRemoteFile < I18n::TestCase
     I18n::Backend::Remote.configure do |config|
       config.file_list = []
       config.base_url = "http://localhost:8080"
+      config.root_dir = "tmp"
     end
 
     assert_raises ::I18n::Backend::Remote::MissingFileList do

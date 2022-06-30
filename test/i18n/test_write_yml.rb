@@ -4,16 +4,6 @@ require "fileutils"
 require "test_helper"
 
 class TestWriteYml < I18n::TestCase
-  def setup
-    super
-    FileUtils.mkdir_p "tmp"
-  end
-
-  def teardown
-    super
-    # File.delete("tmp/en.yml") if File.exist?("tmp/en.yml")
-  end
-
   def test_write_yml
     I18n::Backend::Remote::WriteYml.new(en_body, "en.yml", "tmp").call
     parsed = Psych.parse_stream(File.read("tmp/en.yml")).to_yaml

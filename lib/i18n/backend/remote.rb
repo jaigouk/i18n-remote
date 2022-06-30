@@ -38,7 +38,7 @@ module I18n
         include Flatten
 
         def available_locales
-          []
+          @translations.keys.map(&:to_sym)
         end
 
         def store_translations(_locale, _data, options = {})
@@ -47,7 +47,11 @@ module I18n
 
         def reload!
           @translations = nil
-
+          @errors = []
+          fetch_remote_files
+          validate_yml_string
+          write_yml
+          check_fall_back_locale
           self
         end
 
@@ -62,6 +66,35 @@ module I18n
         def translations(do_init: false)
           init_translations if do_init || !initialized?
           @translations ||= {}
+        end
+
+        private
+
+        def fetch_remote_files
+          res = I18n::Backend::Remote::FetchRemoteFile.new.call
+          res.each do |key, value|
+            case res[key].status
+            when 200...302
+              translations[key] = value.body
+            else
+              @errors << "server returned status #{res[key].status}"
+            end
+          end
+        rescue MissingBaseUrl, MissingFileList => e
+          @errors << e.message
+        end
+
+        def validate_yml_string
+          puts "x"
+        end
+
+        def write_yml
+          puts "x"
+        end
+
+        # fill @translations from local yml files if they exist
+        def check_fall_back_locale
+          puts "x"
         end
 
         protected

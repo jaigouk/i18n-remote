@@ -17,13 +17,14 @@ Config
 
 ```ruby
 I18n::Backend::Remote.configure do |config|
-  config.memory_cache_size = 10
   # base url for fetching yml files
   config.base_url = "http://localhost:8080/locales/"
   # file list that will be concatenated after base_url
   config.file_list = ["en.yml", "de.yml", "extra/data.yml"]
   # used for pararell http requests
-  conofig.faraday_process_count = 6
+  config.faraday_process_count = 6
+  # dir location to save fetched files
+  config.root_dir = "config/locales"
 end
 ```
 
@@ -44,3 +45,8 @@ npx http-server
 ```
 
 visit http://localhost:8080/invalid/missing_colon.yml
+
+## status
+
+- [ ] ssl connection config
+- [ ] ruby3 support when we fetch remote files via faraday
