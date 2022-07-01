@@ -27,6 +27,20 @@ class TestFetchRemoteFile < I18n::TestCase
 
   def test_preconditions_missing_base_url
     I18n::Backend::Remote.configure do |config|
+      config.file_list = ["en.yml", "de.yml"]
+      config.base_url = "http://localhost:8080"
+      config.root_dir = "tmp"
+      config.faraday_process_count = 0
+    end
+    VCR.use_cassette("connection_problem") do
+      res =  I18n::Backend::Remote::FetchRemoteFile.new.call
+      assert_equal res["en.yml"].status, 502
+      assert_equal res["de.yml"].status, 502
+    end
+  end
+
+  def test_preconditions_missing_base_url
+    I18n::Backend::Remote.configure do |config|
       config.file_list = ["en.yml"]
       config.base_url = ""
       config.root_dir = "tmp"

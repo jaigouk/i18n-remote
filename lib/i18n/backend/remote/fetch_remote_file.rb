@@ -18,8 +18,6 @@ module I18n
           @ssl_verify = false
           @client_certificate = nil
           @client_private_key = nil
-
-          @result = {}
         end
 
         attr_reader :base_url, :file_list, :faraday_process_count,
@@ -29,7 +27,6 @@ module I18n
         def call
           guard
           fetch
-          @result
         end
 
         private
@@ -40,6 +37,7 @@ module I18n
         end
 
         def fetch
+          @result ||= {}
           Parallel.map(file_list, in_processes: faraday_process_count) do |file|
             @result[file] = http_request(file)
           end
@@ -48,13 +46,55 @@ module I18n
 
         Response = Struct.new(:status, :body, keyword_init: true)
 
+        # rubocop:disable  Metrics/AbcSize, Metrics/MethodLength
         def http_request(file)
           resp = connection.get(file)
           Response.new(
             status: resp.status,
             body: resp.body
           )
+        rescue Faraday::ConnectionFailed => e
+          Response.new(
+            status: 502,
+            body: e.message
+          )
+        rescue Faraday::UnauthorizedError => e
+          Response.new(
+            status: 401,
+            body: e.message
+          )
+        rescue Faraday::ForbiddenError => e
+          Response.new(
+            status: 403,
+            body: e.message
+          )
+        rescue Faraday::ResourceNotFound => e
+          Response.new(
+            status: 404,
+            body: e.message
+          )
+        rescue Faraday::ProxyAuthError => e
+          Response.new(
+            status: 407,
+            body: e.message
+          )
+        rescue Faraday::ConflictError => e
+          Response.new(
+            status: 409,
+            body: e.message
+          )
+        rescue Faraday::UnprocessableEntityError => e
+          Response.new(
+            status: 422,
+            body: e.message
+          )
+        rescue Faraday::ServerError, Faraday::SSLError, Faraday::ParsingError => e
+          Response.new(
+            status: 500,
+            body: e.message
+          )
         end
+        # rubocop:enable  Metrics/AbcSize, Metrics/MethodLength
 
         def connection
           Faraday.new(url: base_url, ssl: ssl_options) do |f|

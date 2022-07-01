@@ -45,14 +45,13 @@ module I18n
 
         attr_reader :errors
 
-        # also rewrites the yml file
         def store_translations(locale, data, options = {})
           return unless data.is_a?(Hash)
 
           @translations[locale] = data
-          data = I18n::Utils.deep_symbolize_keys(data) unless options.fetch(:skip_symbolize_keys, false)
+          data = deep_symbolize_keys(data) unless options.fetch(:skip_symbolize_keys, false)
 
-          I18n::Utils.deep_merge!(@translations[locale], data)
+          deep_merge(@translations[locale], data)
         end
 
         def reload!
@@ -60,6 +59,7 @@ module I18n
           @translations = {}
           @errors = []
           @parsed = {}
+          @fallback_list = {}
           check_configuration
           init_translations
           self
@@ -105,6 +105,7 @@ module I18n
             when (200...300) || 302
               @translations[key] = value.body
             else
+              mark_file_for_fallback(key)
               @errors << "server returned status #{res[key].status} for #{key} file"
             end
           end
@@ -112,7 +113,10 @@ module I18n
           @errors << e.message
         end
 
-        # TODO: check pararell gem
+        def mark_file_for_fallback(filename)
+          @fallback_list["#{I18n::Backend::Remote.config.root_dir}/#{filename}"] = true
+        end
+
         def validate_yml_string
           temp = {}
           @translations.each do |key, value|
@@ -133,7 +137,6 @@ module I18n
           @translations.delete(key)
         end
 
-        # TODO: check pararell gem
         def write_yml
           @parsed.each do |key, value|
             I18n::Backend::Remote::WriteYml.new(
@@ -144,7 +147,21 @@ module I18n
 
         # fill @translations from local yml files if they exist
         def check_fall_back_locale
-          puts "x"
+          I18n::Backend::Remote.config.load_list.each do |file|
+            next unless File.exist?(file)
+            next unless @fallback_list[file]
+
+            data = deep_symbolize_keys(Psych.load_file(file))
+            @translations.merge!(data)
+          end
+        end
+
+        def deep_symbolize_keys(data)
+          I18n::Utils.deep_symbolize_keys(data)
+        end
+
+        def deep_merge(source, data)
+          I18n::Utils.deep_merge!(source, data)
         end
       end
 

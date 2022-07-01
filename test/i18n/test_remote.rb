@@ -47,7 +47,25 @@ class TestRemote < I18n::TestCase
     end
   end
 
-  def test_store_translations
+  def test_fallback_to_existing_yml_file
+    I18n::Backend::Remote.configure do |config|
+      config.file_list = ["en.yml", "de.yml"]
+      config.base_url = "http://localhost:8080"
+      config.faraday_process_count = 0
+      config.root_dir = "test/fixtures/locales"
+    end
+
+    VCR.use_cassette("integration_fallback") do
+      I18n.backend = I18n::Backend::Remote.new
+      assert_equal I18n.backend.errors.count, 2
+      assert_equal I18n.backend.errors.first.include?("server returned status 502"), true
+      assert_equal I18n.backend.errors.last.include?("server returned status 502"), true
+      res = I18n.t("activerecord.attributes.user.remember_me")
+      assert_equal res, "Remember me"
+    end
+  end
+
+  def test_storing_translations
     VCR.use_cassette("integration_store_translations") do
       I18n.backend = I18n::Backend::Remote.new
       I18n.backend.store_translations(:en, { you: "there" })
