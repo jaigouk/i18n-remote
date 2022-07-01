@@ -25,7 +25,7 @@ class TestFetchRemoteFile < I18n::TestCase
     assert_equal res["en-phrase.yml"].body, phrase_body
   end
 
-  def test_preconditions_missing_base_url
+  def test_fetch_error
     I18n::Backend::Remote.configure do |config|
       config.file_list = ["en.yml", "de.yml"]
       config.base_url = "http://localhost:8080"

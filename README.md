@@ -1,4 +1,5 @@
 # i18n-remote
+[![Ruby](https://github.com/jaigouk/i18n-remote/actions/workflows/main.yml/badge.svg)](https://github.com/jaigouk/i18n-remote/actions/workflows/main.yml)
 
 extending [i18n gem](https://github.com/ruby-i18n/i18n)
 
