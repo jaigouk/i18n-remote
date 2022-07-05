@@ -46,6 +46,8 @@ module I18n
 
         Response = Struct.new(:status, :body, keyword_init: true)
 
+        private_constant :Response
+
         # rubocop:disable  Metrics/AbcSize, Metrics/MethodLength
         def http_request(file)
           resp = connection.get(file)

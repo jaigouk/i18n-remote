@@ -25,6 +25,7 @@ module I18n
         end
 
         Response = Struct.new(:parsed, :str, :errors, keyword_init: true)
+        private_constant :Response
 
         def parse
           Response.new(parsed: Psych.parse(str).to_ruby, str: str, errors: nil)

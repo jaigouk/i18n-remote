@@ -22,7 +22,9 @@ module I18n
         end
 
         def valid?
-          !nil_or_empty?(file_list) && !nil_or_empty?(base_url) && !nil_or_empty?(root_dir)
+          !nil_or_empty?(file_list) &&
+            !nil_or_empty?(base_url) &&
+            !nil_or_empty?(root_dir)
         end
 
         private

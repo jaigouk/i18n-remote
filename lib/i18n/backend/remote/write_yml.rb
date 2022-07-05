@@ -35,6 +35,7 @@ module I18n
         end
 
         Response = Struct.new(:errors, keyword_init: true)
+        private_constant :Response
 
         def write
           File.write(write_path, str)

@@ -54,5 +54,6 @@ visit http://localhost:8080/invalid/missing_colon.yml
 
 ## status
 
+- [ ] simplify error handling
 - [ ] ssl connection config
 - [ ] ruby3 support when we fetch remote files via faraday
