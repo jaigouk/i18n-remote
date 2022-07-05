@@ -4,23 +4,20 @@ require "i18n/backend/base"
 require "i18n/backend/transliterator"
 require "i18n/utils"
 
+# config
+require "i18n/backend/remote/configuration"
+require "i18n/backend/remote/utils"
+# Errors
+require "i18n/backend/remote/errors"
+# Operations
+require "i18n/backend/remote/fetch_remote_file"
+require "i18n/backend/remote/validate_yml_string"
+require "i18n/backend/remote/write_yml"
+
 module I18n
   module Backend
     class Remote
       # config and utils
-      autoload :Configuration, "i18n/backend/remote/configuration"
-      autoload :Utils, "i18n/backend/remote/utils"
-      # Errors
-      autoload :MissingBaseUrl, "i18n/backend/remote/errors"
-      autoload :MissingFileList, "i18n/backend/remote/errors"
-      autoload :ConfigurationError, "i18n/backend/remote/errors"
-      autoload :ParseError, "i18n/backend/remote/errors"
-      autoload :WriteError, "i18n/backend/remote/errors"
-      # Operations
-      autoload :FetchRemoteFile, "i18n/backend/remote/fetch_remote_file"
-      autoload :ValidateYmlString, "i18n/backend/remote/validate_yml_string"
-      autoload :WriteYml, "i18n/backend/remote/write_yml"
-
       def initialize
         reload!
       end
@@ -72,10 +69,17 @@ module I18n
         def translations(do_init: false)
           init_translations if do_init || !initialized?
           @translations ||= {}
-          @initialized = true
         end
 
         protected
+
+        def init_translations
+          fetch_remote_files
+          validate_yml_string
+          write_yml
+          check_fall_back_locale
+          verify_initialization
+        end
 
         def lookup(locale, key, _scope = [], _options = {})
           keys = ([locale] + key.split(I18n::Backend::Flatten::FLATTEN_SEPARATOR)).map(&:to_sym)
@@ -86,14 +90,6 @@ module I18n
           return if I18n::Backend::Remote.config.valid?
 
           @errors << "Missing configurations"
-        end
-
-        def init_translations
-          fetch_remote_files
-          validate_yml_string
-          write_yml
-          check_fall_back_locale
-          @initialized = true
         end
 
         private
@@ -111,10 +107,6 @@ module I18n
           end
         rescue MissingBaseUrl, MissingFileList => e
           @errors << e.message
-        end
-
-        def mark_file_for_fallback(filename)
-          @fallback_list["#{I18n::Backend::Remote.config.root_dir}/#{filename}"] = true
         end
 
         def validate_yml_string
@@ -148,12 +140,26 @@ module I18n
         # fill @translations from local yml files if they exist
         def check_fall_back_locale
           I18n::Backend::Remote.config.load_list.each do |file|
-            next unless File.exist?(file)
-            next unless @fallback_list[file]
+            unless File.exist?(file)
+              @errors << "#{file} does not exist"
+              next
+            end
+
+            unless @fallback_list[file]
+              @errors << "#{file} is not in the fallback list"
+              next
+            end
 
             data = deep_symbolize_keys(Psych.load_file(file))
             @translations.merge!(data)
+          rescue Psych::SyntaxError => e
+            @errors << e.message
+            next
           end
+        end
+
+        def mark_file_for_fallback(filename)
+          @fallback_list["#{I18n::Backend::Remote.config.root_dir}/#{filename}"] = true
         end
 
         def deep_symbolize_keys(data)
@@ -162,6 +168,10 @@ module I18n
 
         def deep_merge(source, data)
           I18n::Utils.deep_merge!(source, data)
+        end
+
+        def verify_initialization
+          @initialized = true if @translations.keys.size == I18n::Backend::Remote.config.file_list.size
         end
       end
 

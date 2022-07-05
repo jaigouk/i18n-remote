@@ -2,7 +2,6 @@
 
 require "test_helper"
 
-
 class TestRemote < I18n::TestCase
   def setup
     super
@@ -44,6 +43,7 @@ class TestRemote < I18n::TestCase
       res = I18n.t("activerecord.attributes.user.remember_me")
 
       assert_equal "Remember me", res
+      assert_equal I18n.backend.initialized?, true
     end
   end
 
@@ -62,6 +62,25 @@ class TestRemote < I18n::TestCase
       assert_equal I18n.backend.errors.last.include?("server returned status 502"), true
       res = I18n.t("activerecord.attributes.user.remember_me")
       assert_equal res, "Remember me"
+      assert_equal I18n.backend.initialized?, true
+    end
+  end
+
+  def test_fallback_invalid_yml_file
+    I18n::Backend::Remote.configure do |config|
+      config.file_list = ["missing_colon.yml", "missing_value.yml"]
+      config.base_url = "http://localhost:8080"
+      config.faraday_process_count = 0
+      config.root_dir = "test/fixtures/locales/invalid"
+    end
+
+    VCR.use_cassette("integration_fallback_invalid") do
+      I18n.backend = I18n::Backend::Remote.new
+      assert_equal I18n.backend.errors.count, 3
+      errors = I18n.backend.errors.join(", ")
+      assert_equal errors.include?("server returned status 502"), true
+      assert_equal errors.include?("mapping values are not allowed in this context"), true
+      assert_equal I18n.backend.initialized?, false
     end
   end
 
