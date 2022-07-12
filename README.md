@@ -3,7 +3,7 @@
 
 extending [i18n gem](https://github.com/ruby-i18n/i18n)
 
-- fetch multiple remote i18n yaml files
+- fetch multiple remote i18n yaml files(assuming no local files as a initial status)
 - fall back to local translation files in case of any network issues
 
 ## usage
@@ -56,4 +56,5 @@ visit http://localhost:8080/invalid/missing_colon.yml
 
 - [ ] simplify error handling
 - [ ] ssl connection config
+- [ ] storing files in s3 or minio instead of local directory
 - [ ] ruby3 support when we fetch remote files via faraday
